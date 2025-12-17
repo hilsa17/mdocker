@@ -1,0 +1,10 @@
+# binaries
+mdocker
+
+# container filesystem
+rootfs/
+
+# Go build cache
+*.exe
+*.out
+
