@@ -24,6 +24,26 @@ func main() {
 		os.Exit(1)
 	}
 }
+func setupCgroup(pid int) {
+	cgroupPath := "/sys/fs/cgroup/mdocker"
+
+	// create cgroup
+	if err := os.Mkdir(cgroupPath, 0755); err != nil && !os.IsExist(err) {
+		panic(err)
+	}
+
+	// CPU: 50%
+	os.WriteFile(cgroupPath+"/cpu.max", []byte("50000 100000"), 0644)
+
+	// Memory: 100mb
+	os.WriteFile(cgroupPath+"/memory.max", []byte("104857600"), 0644)
+
+	// Max 20 processes
+	os.WriteFile(cgroupPath+"/pids.max", []byte("20"), 0644)
+
+	// add process to cgroup
+	os.WriteFile(cgroupPath+"/cgroup.procs", []byte(fmt.Sprintf("%d", pid)), 0644)
+}
 
 func run() {
 	cmd := exec.Command("/proc/self/exe", append([]string{"child"}, os.Args[2:]...)...)
@@ -34,10 +54,16 @@ func run() {
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Cloneflags: syscall.CLONE_NEWUTS |
 			syscall.CLONE_NEWPID |
-			syscall.CLONE_NEWNS,
+			syscall.CLONE_NEWNS|
+                        syscall.CLONE_NEWNET,
+	}
+        if err := cmd.Start(); err != nil {
+		panic(err)
 	}
 
-	if err := cmd.Run(); err != nil {
+	setupCgroup(cmd.Process.Pid)
+
+	if err := cmd.Wait(); err != nil {
 		panic(err)
 	}
 }
@@ -97,6 +123,12 @@ func child() {
 	if err := syscall.Mount("proc", "/proc", "proc", 0, ""); err != nil {
 		panic(err)
 	}
+
+        // mount cgroups v2
+        os.MkdirAll("/sys/fs/cgroup", 0755)
+        if err := syscall.Mount("cgroup2", "/sys/fs/cgroup", "cgroup2", 0, ""); err != nil {
+                panic(err)
+        }
 
 	// run command
 	cmd := exec.Command(os.Args[2])
