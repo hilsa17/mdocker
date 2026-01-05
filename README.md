@@ -14,7 +14,7 @@ inside independent namespaces and a custom root filesystem.
 - **Cgroups Resource Limits**: Set basic resource limits using cgroups (CPU, memory, pids).
   A dedicated cgroup is created at `/sys/fs/cgroup/mdocker` which is configured via `cpu.max`, `memory.max`, `pids.max`, `cgroup.procs`. This can be verified:
   `cat /sys/fs/cgroup/mdocker/pids.max`
-   `cat /sys/fs/cgroup/mdocker/pids.current`
+  `cat /sys/fs/cgroup/mdocker/pids.current`
 - **Re-exec Child Mode**: Parent prepares environment then exec/clone into child mode to build isolated process tree
 - **I/O forwarding**: Forward the container’s stdin, stdout, and stderr to the host terminal
 ## Requirements
@@ -32,7 +32,7 @@ This project was developed on WSL2. Due to WSL2 limitations, container networkin
 ## Setup Instructions
 1. Clone Repository
 ```bash
-git clone https://github.com/<your-username>/mdocker.git
+git clone https://github.com/hilsa17/mdocker
 cd mdocker
 ```
 2. Prepare Root Filesystem
