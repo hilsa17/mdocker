@@ -13,8 +13,8 @@ inside independent namespaces and a custom root filesystem.
 - **Separate Root Filesystem**: Support running with a separate rootfs using `pivot_root` and populate `/proc`, `/dev`
 - **Cgroups Resource Limits**: Set basic resource limits using cgroups (CPU, memory, pids).
   A dedicated cgroup is created at `/sys/fs/cgroup/mdocker` which is configured via `cpu.max`, `memory.max`, `pids.max`, `cgroup.procs`. This can be verified:
-  `cat /sys/fs/cgroup/mdocker/pids.max
-   cat /sys/fs/cgroup/mdocker/pids.current`
+  `cat /sys/fs/cgroup/mdocker/pids.max`
+   `cat /sys/fs/cgroup/mdocker/pids.current`
 - **Re-exec Child Mode**: Parent prepares environment then exec/clone into child mode to build isolated process tree
 - **I/O forwarding**: Forward the container’s stdin, stdout, and stderr to the host terminal
 ## Requirements
@@ -61,5 +61,17 @@ go build -o mdocker
 sudo ./mdocker run /bin/sh
 ```
 ##Demo commands
+PID isolation
+```bash
+ps
+```
+Process limit demo
+```bash
+for i in $(seq 1 30); do sh -c "sleep 100" & done
+```
 
+Check:
+```bash
+cat /sys/fs/cgroup/mdocker/pids.current
+```
 
