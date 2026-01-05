@@ -61,16 +61,16 @@ go build -o mdocker
 sudo ./mdocker run /bin/sh
 ```
 ##Demo commands
-PID isolation
+1. PID isolation
 ```bash
 ps
 ```
-Process limit demo
+2. Process limit demo
 ```bash
 for i in $(seq 1 30); do sh -c "sleep 100" & done
 ```
 
-Check:
+3. Check:
 ```bash
 cat /sys/fs/cgroup/mdocker/pids.current
 ```
